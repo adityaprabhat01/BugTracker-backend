@@ -1,4 +1,4 @@
-const User = require("../models/User");
+const { User } = require("../models/User");
 const jwt = require("jsonwebtoken");
 const { isObjectEmpty } = require("../utils");
 
@@ -80,7 +80,16 @@ const login = async (req, res) => {
   }
 };
 
+const logout = (req, res) => {
+  res.cookie("jwt", "", { maxAge: 1 });
+  res.cookie("username", "", { maxAge: 1 });
+  res.send({
+    redirect: true,
+  });
+};
+
 module.exports = {
   signup,
   login,
+  logout,
 };
