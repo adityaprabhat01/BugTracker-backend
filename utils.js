@@ -1,5 +1,8 @@
 function isObjectEmpty(obj) {
-  return Object.keys(obj).length === 0;
+  if(obj === null || obj === undefined || Object.keys(obj).length === 0) {
+    return true;
+  }
+  return false;
 }
 
 module.exports = {

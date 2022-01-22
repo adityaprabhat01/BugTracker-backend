@@ -5,11 +5,17 @@ const projectDetailSchema = mongoose.Schema({
     type: String,
     required: true,
     trim: true,
-    unique: true
   },
   project_id: {
     type: mongoose.Types.ObjectId
-  }
+  },
+  dateCreated: {
+    type: Date,
+    default: Date.now,
+  },
+  details: {
+    type: String,
+  },
 })
 
 const ProjectDetail = mongoose.model('ProjectDetail', projectDetailSchema);

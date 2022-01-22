@@ -1,6 +1,7 @@
 const { User } = require("../models/User");
 const jwt = require("jsonwebtoken");
 const { isObjectEmpty } = require("../utils");
+const { UserCache } = require("../models/UserCache");
 
 const createToken = (id) => {
   const maxAge = 3 * 24 * 60 * 60;
@@ -8,6 +9,8 @@ const createToken = (id) => {
     expiresIn: maxAge,
   });
 };
+
+// Sign up user
 
 const signup = async (req, res) => {
   const { name, email, username, password } = req.body;
@@ -36,6 +39,13 @@ const signup = async (req, res) => {
       password,
     });
     const user = await newUser.save();
+    console.log(user.id)
+
+    const newUserCache = new UserCache({
+      user_id: user._id
+    })
+    const cached = await newUserCache.save();    
+
     const token = createToken(user._id);
     res.cookie("jwt", token, { httpOnly: true });
     res.cookie("username", user.username, { httpOnly: true });
@@ -45,11 +55,14 @@ const signup = async (req, res) => {
       username: user.username,
     });
   } catch (err) {
+    console.log(err)
     res.status(500).json({
       error: "Something went wrong",
     });
   }
 };
+
+// Log in user
 
 const login = async (req, res) => {
   const { username, password } = req.body;
@@ -79,6 +92,8 @@ const login = async (req, res) => {
     });
   }
 };
+
+// Log out user
 
 const logout = (req, res) => {
   res.cookie("jwt", "", { maxAge: 1 });
