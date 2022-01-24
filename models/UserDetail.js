@@ -10,10 +10,9 @@ const userDetailSchema = mongoose.Schema({
     type: String,
     required: true,
     trim: true,
-    unique: true,
   },
   user_id: {
-    type: mongoose.Types.ObjectId,
+    type: mongoose.Schema.Types.ObjectId,
     required: true
   },
   profileImageUrl: {

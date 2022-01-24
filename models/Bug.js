@@ -1,6 +1,5 @@
 const mongoose = require('mongoose')
 const { commentSchema } = require('./Comment')
-const { projectDetailSchema } = require('./ProjectDetail')
 const { userDetailSchema } = require('./UserDetail')
 
 const bugSchema = mongoose.Schema({
@@ -10,6 +9,9 @@ const bugSchema = mongoose.Schema({
   },
   user: {
     type: userDetailSchema
+  },
+  project_id: {
+    type: mongoose.Schema.Types.ObjectId
   },
   body: {
     type: String,
@@ -25,9 +27,13 @@ const bugSchema = mongoose.Schema({
   comments: [{
     type: commentSchema
   }],
-  project: {
-    type: projectDetailSchema
-  }
+  labels: [{
+    type: String
+  }],
+  isOpen: {
+    type: Boolean
+  },
+  members: [{ type: userDetailSchema }]
 })
 
 const Bug = mongoose.model('Bug', bugSchema);

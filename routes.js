@@ -1,5 +1,13 @@
 const express = require("express");
 const {
+  addBug,
+  updateBug,
+  addMemberBug,
+  removeMemberBug,
+  getBug,
+  getBugsOfUser,
+} = require("./controllers/bugController");
+const {
   addProject,
   deleteProject,
   updateProject,
@@ -25,5 +33,13 @@ router.post("/addMembers", addMembers);
 router.post("/removeMember", removeMember);
 router.get("/getProject/:project_id", getProject);
 router.get("/getProjectsOfUser/:user_id", getProjectsOfUser);
+
+// Bug controller
+router.post("/addBug", addBug);
+router.post("/updateBug", updateBug);
+router.post("/addMemberBug", addMemberBug);
+router.post("/removeMemberBug", removeMemberBug);
+router.get("/getBug/:bug_id", getBug);
+router.get("/getBugsOfUser/:user_id", getBugsOfUser);
 
 module.exports = router;

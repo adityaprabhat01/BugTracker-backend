@@ -15,17 +15,11 @@ const projectSchema = mongoose.Schema({
     type: Date,
     default: Date.now,
   },
-  details: {
+  body: {
     type: String,
   },
   members: [{ type: userDetailSchema }],
-  techStack: [
-    {
-      name: {
-        type: String,
-      },
-    },
-  ],
+  techStack: [{ name: String }],
   projectImageUrl: {
     type: String,
   },
@@ -34,6 +28,7 @@ const projectSchema = mongoose.Schema({
       type: commentSchema,
     },
   ],
+  bugs: [{ bug_id: mongoose.Types.ObjectId }],
 });
 
 const Project = mongoose.model("Project", projectSchema);

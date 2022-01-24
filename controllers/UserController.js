@@ -39,7 +39,6 @@ const signup = async (req, res) => {
       password,
     });
     const user = await newUser.save();
-    console.log(user.id)
 
     const newUserCache = new UserCache({
       user_id: user._id

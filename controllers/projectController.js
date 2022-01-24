@@ -1,5 +1,6 @@
+const mongoose = require("mongoose");
+const { ObjectId } = require("mongodb");
 const { Project } = require("../models/Project");
-const { ProjectDetail } = require("../models/ProjectDetail");
 const { UserCache } = require("../models/UserCache");
 const { UserDetail } = require("../models/UserDetail");
 const { isObjectEmpty } = require("../utils");
@@ -7,28 +8,26 @@ const { isObjectEmpty } = require("../utils");
 // Create a new project
 
 const addProject = async (req, res) => {
-  const { title, user, details } = req.body;
+  const { title, user, body } = req.body;
   try {
+    // Add new project
     const newProject = new Project({
       title,
       user,
-      details,
+      body,
     });
     const project = await newProject.save();
 
+    // Update UserCache model
     const user_cache = await UserCache.findOne({ user_id: user.user_id });
     const { projects } = user_cache;
-    const project_detail = new ProjectDetail({
-      project_id: project._id,
-      title: project.title,
-      dateCreated: project.dateCreated,
-      details: project.details,
-    });
-    projects.push(project_detail);
+    const project_id = project._id;
+    projects.push({ project_id });
     await user_cache.save();
 
-    return res.status(200).json(project);
+    return res.json(project);
   } catch (err) {
+    console.log(err);
     res.status(500).json({
       error: "Something went wrong",
     });
@@ -36,22 +35,31 @@ const addProject = async (req, res) => {
 };
 
 // Delete a project
-// COMPLICATED DON'T USE FOR NOW
 const deleteProject = async (req, res) => {
-  const { _id, title, user_id } = req.body;
+  const { project_id, user_id } = req.body;
   try {
-    const project = await Project.findOne({ _id });
+    // Delete from Project model
+    const project = await Project.findOne({ _id: project_id });
     if (isObjectEmpty(project)) {
       return res.json({
         message: `Project ${title} does not exist`,
       });
     }
-    Project.findOneAndDelete({ _id }, function (err, result) {
+    Project.findOneAndDelete({ _id: project_id }, async function (err, result) {
       if (err) {
         return res.status(500).json({
-          error: err,
+          error: "Something went wrong",
         });
       } else {
+        // Update UserCache Model
+        const user_cache = await UserCache.findOne({ user_id });
+        const { projects } = user_cache;
+        const filtered_projects = projects.filter(
+          (project) => project.project_id !== project_id
+        );
+        user_cache.projects = filtered_projects;
+        await user_cache.save();
+
         return res.json({
           message: `Project ${result.title} deleted sucessfully`,
         });
@@ -64,29 +72,28 @@ const deleteProject = async (req, res) => {
   }
 };
 
-// Update title, details, techStack
+// Update title, body, techStack
 
 const updateProject = async (req, res) => {
-  const { _id, title, details, techStack } = req.body;
+  const { project_id, title, body, techStack } = req.body;
   try {
-    const project = await Project.findOne({ _id });
+    const project = await Project.findOne({ _id: project_id });
     if (isObjectEmpty(project)) {
       return res.json({
         message: `Project ${title} does not exist`,
       });
     }
     const updatedProject = await Project.findOneAndUpdate(
-      { _id },
-      { title, details, techStack },
+      { _id: project_id },
+      { title, body, techStack },
       { new: true }
     );
     if (isObjectEmpty(updatedProject)) {
       res.status(500).json({
         error: "Something went wrong",
       });
-    } else {
-      return res.json(updatedProject);
     }
+    return res.json(updatedProject);
   } catch (err) {
     res.status(500).json({
       error: "Something went wrong",
@@ -100,6 +107,7 @@ const addMembers = async (req, res) => {
   const { user_id, name, username, profileImageUrl, project_id, title } =
     req.body;
   try {
+    // Add into Project model
     const project = await Project.findOne({ _id: project_id });
     if (isObjectEmpty(project)) {
       return res.json({
@@ -107,10 +115,10 @@ const addMembers = async (req, res) => {
       });
     }
     const { members } = project;
-    const filtered = members.filter(
+    const filtered_members = members.filter(
       (member) => member.user_id.toString() === user_id
     );
-    if (filtered.length !== 0) {
+    if (filtered_members.length !== 0) {
       return res.json({
         message: `${username} is already present in the project`,
       });
@@ -124,24 +132,23 @@ const addMembers = async (req, res) => {
     project.members.push(user_detail);
     await project.save();
 
-    const user_cache = await UserCache.findOne({ user_id });
-    const { projects } = user_cache;
-    const check = projects.filter(
-      (project) => project.project_id.toString() === project_id
-    );
-    if (check.length !== 0) {
-      return res.json({
-        message: `${username} is already present in the project`,
-      });
+    // Update UserCache model
+    {
+      const user_cache = await UserCache.findOne({ user_id });
+      const { projects } = user_cache;
+      const filtered_cache = projects.filter(
+        (project) => project.project_id.toString() === project_id
+      );
+      if (filtered_cache.length !== 0) {
+        return res.json({
+          message: `${username} is already present in the project`,
+        });
+      }
+      const project_id = project._id;
+      projects.push(project_id);
+      await user_cache.save();
     }
-    const project_detail = new ProjectDetail({
-      project_id: project._id,
-      title: project.title,
-      dateCreated: project.dateCreated,
-      details: project.details,
-    });
-    projects.push(project_detail);
-    await user_cache.save();
+
     return res.json(project);
   } catch (err) {
     res.status(500).json({
@@ -153,32 +160,34 @@ const addMembers = async (req, res) => {
 // Remove member from project
 
 const removeMember = async (req, res) => {
-  const { user_id, project_id, title } = req.body;
+  const { user_id, project_id } = req.body;
   try {
+    // Remove from Project model
     const project = await Project.findOne({ _id: project_id });
     if (isObjectEmpty(project)) {
       return res.json({
-        message: `Project ${title} does not exist`,
+        message: `Project does not exist`,
       });
     }
     const { members } = project;
-
     const filtered_members = members.filter(
       (member) => member.user_id.toString() !== user_id
     );
     project.members = filtered_members;
     const updatedProject = await project.save();
 
+    // Update UserCache model
     const user_cache = await UserCache.findOne({ user_id });
     const { projects } = user_cache;
-    const filtered_projects = projects.filter(
-      (project) => project.project_id !== project_id
+    const filtered_cache = projects.filter(
+      (project) => project.project_id.toString() !== project_id
     );
-    user_cache.projects = filtered_projects;
+    user_cache.projects = filtered_cache;
     await user_cache.save();
 
     return res.json(updatedProject);
   } catch (err) {
+    console.log(err)
     return res.status(500).json({
       error: "Something went wrong",
     });
@@ -205,11 +214,12 @@ const getProject = async (req, res) => {
 };
 
 // Get projects of a user
-
+// Add populate method
 const getProjectsOfUser = async (req, res) => {
   const { user_id } = req.params;
   try {
-    const user_cache = await UserCache.findOne({ user_id });
+    const user_cache = await UserCache.findOne({ user_id }).populate('user_id');
+    console.log(user_cache)
     if (isObjectEmpty(user_cache)) {
       return res.json({
         message: "User does not exist",
