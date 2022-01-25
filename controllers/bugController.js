@@ -23,16 +23,15 @@ const addBug = async (req, res) => {
     const user_cache = await UserCache.findOne({ user_id: user.user_id });
     const { bugs } = user_cache;
     const bug_id = bug._id;
-    bugs.push({ bug_id });
+    bugs.push(bug_id);
     user_cache.save();
-    delete bugs;
 
     // Update Project model
     {
-      const project = Project.findOne({ _id: project_id });
-      const { bugs } = projects;
+      const project = await Project.findOne({ _id: project_id });
+      const { bugs } = project;
       const bug_id = bug._id;
-      bugs.push({ bug_id });
+      bugs.push(bug_id);
       await project.save();
     }
 
@@ -52,7 +51,7 @@ const updateBug = async (req, res) => {
     const bug = await Bug.findOne({ _id: bug_id });
     if (isObjectEmpty(bug)) {
       return res.json({
-        message: `${title} does not exist`,
+        message: "Bug does not exist",
       });
     }
     bug.body = body;
@@ -74,7 +73,7 @@ const addMemberBug = async (req, res) => {
     const bug = await Bug.findOne({ _id: bug_id });
     if (isObjectEmpty(bug)) {
       return res.json({
-        message: `Bug does not exist`,
+        message: "Bug does not exist",
       });
     }
     const { members } = bug;
@@ -96,21 +95,22 @@ const addMemberBug = async (req, res) => {
     await bug.save();
 
     // update the UserCache model
-    const user_cache = await UserCache.findOne({ user_id });
-    const { bugs } = user_cache;
-    const filtered_cache = bugs.filter((bug) => bug.project_id.toString() === bug_id);
-    if (filtered_cache.length !== 0) {
-      return res.json({
-        message: `${username} is already a member in the bug`,
-      });
+    {
+      const user_cache = await UserCache.findOne({ user_id });
+      const { bugs } = user_cache;
+      const filtered_cache = bugs.filter((bug) => bug.toString() === bug_id);
+      if (filtered_cache.length !== 0) {
+        return res.json({
+          message: `${username} is already a member in the bug`,
+        });
+      }
+      const bug_id = bug._id;
+      bugs.push(bug_id);
+      await user_cache.save();
     }
-    const bug_id = bug._id;
-    bugs.push({ bug_id });
-    await user_cache.save();
 
     return res.json(bug);
   } catch (err) {
-    console.log(err);
     res.status(500).json({
       error: "Something went wrong",
     });
@@ -126,7 +126,7 @@ const removeMemberBug = async (req, res) => {
     const bug = await Bug.findOne({ _id: bug_id });
     if (isObjectEmpty(bug)) {
       return res.json({
-        message: `Bug does not exist`,
+        message: "Bug does not exist",
       });
     }
     const { members } = bug;
@@ -140,7 +140,7 @@ const removeMemberBug = async (req, res) => {
     const user_cache = await UserCache.findOne({ user_id });
     const { bugs } = user_cache;
     const filtered_cache = bugs.filter(
-      (bug) => bug.bug_id.toString() !== bug_id
+      (bug) => bug.toString() !== bug_id
     );
     user_cache.bugs = filtered_cache;
     await user_cache.save();
@@ -173,19 +173,17 @@ const getBug = async (req, res) => {
 };
 
 // Get all the bugs of user
-// Add populate method
+
 const getBugsOfUser = async (req, res) => {
   const { user_id } = req.params;
   try {
-    const user_cache = await UserCache.findOne({ user_id }).populate('user_id');
+    const user_cache = await UserCache.findOne({ user_id }).populate('bugs');
     if (isObjectEmpty(user_cache)) {
       return res.json({
         message: "User does not exist",
       });
     }
-    //const { bugs } = user_cache;
-    console.log(user_cache)
-
+    const { bugs } = user_cache;
     res.json(bugs);
   } catch (err) {
     return res.json({

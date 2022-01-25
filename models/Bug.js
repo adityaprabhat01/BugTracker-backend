@@ -11,7 +11,8 @@ const bugSchema = mongoose.Schema({
     type: userDetailSchema
   },
   project_id: {
-    type: mongoose.Schema.Types.ObjectId
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Project'
   },
   body: {
     type: String,

@@ -11,8 +11,8 @@ const userCacheSchema = mongoose.Schema({
   username: {
     type: String
   },
-  projects: [{ project_id: mongoose.Schema.Types.ObjectId }],
-  bugs: [{ bug_id: mongoose.Schema.Types.ObjectId }]
+  projects: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Project' }],
+  bugs: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Bug' }]
 })
 
 const UserCache = mongoose.model('UserCache', userCacheSchema);

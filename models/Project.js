@@ -28,7 +28,7 @@ const projectSchema = mongoose.Schema({
       type: commentSchema,
     },
   ],
-  bugs: [{ bug_id: mongoose.Types.ObjectId }],
+  bugs: [{ type: mongoose.Types.ObjectId, ref: 'Bug' }],
 });
 
 const Project = mongoose.model("Project", projectSchema);
