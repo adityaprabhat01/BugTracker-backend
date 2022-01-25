@@ -213,7 +213,7 @@ const getProject = async (req, res) => {
 };
 
 // Get projects of a user
-// Add populate method
+
 const getProjectsOfUser = async (req, res) => {
   const { user_id } = req.params;
   try {

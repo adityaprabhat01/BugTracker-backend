@@ -6,7 +6,14 @@ const {
   removeMemberBug,
   getBug,
   getBugsOfUser,
+  closeBug,
+  reopenBug,
 } = require("./controllers/bugController");
+const {
+  postComment,
+  updateComment,
+  deleteComment,
+} = require("./controllers/commentController");
 const {
   addProject,
   deleteProject,
@@ -41,5 +48,12 @@ router.post("/addMemberBug", addMemberBug);
 router.post("/removeMemberBug", removeMemberBug);
 router.get("/getBug/:bug_id", getBug);
 router.get("/getBugsOfUser/:user_id", getBugsOfUser);
+router.post("/closeBug", closeBug);
+router.post("/reopenBug", reopenBug);
+
+// Comment controller
+router.post("/postComment", postComment);
+router.post("/updateComment", updateComment);
+router.post("/deleteComment", deleteComment);
 
 module.exports = router;

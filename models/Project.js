@@ -23,11 +23,6 @@ const projectSchema = mongoose.Schema({
   projectImageUrl: {
     type: String,
   },
-  comments: [
-    {
-      type: commentSchema,
-    },
-  ],
   bugs: [{ type: mongoose.Types.ObjectId, ref: 'Bug' }],
 });
 

@@ -16,6 +16,7 @@ const addBug = async (req, res) => {
       body,
       user,
       project_id,
+      isOpen: true
     });
     const bug = await newBug.save();
 
@@ -192,6 +193,51 @@ const getBugsOfUser = async (req, res) => {
   }
 };
 
+// Close the bug
+
+const closeBug = async (req, res) => {
+  const { bug_id, user_id } = req.body;
+  try {
+    const bug = await Bug.findOne({ _id: bug_id });
+    if(isObjectEmpty(bug)) {
+      return res.json({
+        message: "Bug does not exist"
+      })
+    }
+    if(bug.user.user_id.toString() !== user_id) {
+      return res.json({
+        message: "User not authorized to close the bug"
+      })
+    }
+    bug.isOpen = false;
+    const updatedBug = await bug.save()
+    res.json(updatedBug);
+  } catch (err) {
+    res.json({
+      error: "Something went wrong"
+    })
+  }
+}
+
+const reopenBug = async (req, res) => {
+  const { bug_id } = req.body;
+  try {
+    const bug = await Bug.findOne({ _id: bug_id });
+    if(isObjectEmpty(bug)) {
+      return res.json({
+        message: "Bug does not exist"
+      })
+    }
+    bug.isOpen = true;
+    const updatedBug = await bug.save()
+    res.json(updatedBug);
+  } catch (err) {
+    res.json({
+      error: "Something went wrong"
+    })
+  }
+}
+
 module.exports = {
   addBug,
   updateBug,
@@ -199,4 +245,6 @@ module.exports = {
   removeMemberBug,
   getBug,
   getBugsOfUser,
+  closeBug,
+  reopenBug
 };

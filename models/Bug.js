@@ -26,14 +26,12 @@ const bugSchema = mongoose.Schema({
     type: Boolean
   },
   comments: [{
-    type: commentSchema
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Comment'
   }],
   labels: [{
     type: String
   }],
-  isOpen: {
-    type: Boolean
-  },
   members: [{ type: userDetailSchema }]
 })
 
