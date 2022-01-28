@@ -52,6 +52,7 @@ const signup = async (req, res) => {
       user_id: user._id,
       name: user.name,
       username: user.username,
+      email: user.email
     });
   } catch (err) {
     console.log(err)
