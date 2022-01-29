@@ -44,10 +44,10 @@ const signup = async (req, res) => {
       user_id: user._id
     })
     const cached = await newUserCache.save();    
-
     const token = createToken(user._id);
     res.cookie("jwt", token, { httpOnly: true });
-    res.cookie("username", user.username, { httpOnly: true });
+    res.cookie("username", user.username);
+    res.cookie("user_id", user.id)
     return res.status(201).json({
       user_id: user._id,
       name: user.name,
@@ -75,7 +75,8 @@ const login = async (req, res) => {
     if (authenticated) {
       const token = createToken(user._id);
       res.cookie("jwt", token, { httpOnly: true });
-      res.cookie("username", user.username, { httpOnly: true });
+      res.cookie("username", user.username);
+      res.cookie("user_id", user.id);
       return res.status(201).json({
         user_id: user._id,
         name: user.name,
