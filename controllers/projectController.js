@@ -149,7 +149,7 @@ const addMembers = async (req, res) => {
       }
     }
 
-    return res.json(project);
+    return res.json(user_detail);
   } catch (err) {
     res.status(500).json({
       error: "Something went wrong",
@@ -185,7 +185,9 @@ const removeMember = async (req, res) => {
     user_cache.projects = filtered_cache;
     await user_cache.save();
 
-    return res.json(updatedProject);
+    return res.json({
+      user_id
+    });
   } catch (err) {
     return res.status(500).json({
       error: "Something went wrong",
@@ -198,7 +200,7 @@ const removeMember = async (req, res) => {
 const getProject = async (req, res) => {
   const { project_id } = req.params;
   try {
-    const project = await Project.findOne({ _id: project_id });
+    const project = await Project.findOne({ _id: project_id }).populate('bugs');
     if (isObjectEmpty(project)) {
       return res.json({
         message: `Project does not exist`,
