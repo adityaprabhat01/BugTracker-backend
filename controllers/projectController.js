@@ -73,7 +73,7 @@ const deleteProject = async (req, res) => {
 // Update title, body, techStack
 
 const updateProject = async (req, res) => {
-  const { project_id, title, body, techStack } = req.body;
+  const { project_id, body, techStack } = req.body;
   try {
     const project = await Project.findOne({ _id: project_id });
     if (isObjectEmpty(project)) {
@@ -81,17 +81,15 @@ const updateProject = async (req, res) => {
         message: `Project ${title} does not exist`,
       });
     }
-    const updatedProject = await Project.findOneAndUpdate(
-      { _id: project_id },
-      { title, body, techStack },
-      { new: true }
-    );
-    if (isObjectEmpty(updatedProject)) {
-      res.status(500).json({
-        error: "Something went wrong",
-      });
+    project.body = body;
+    if(techStack.name !== "") {
+      project.techStack.push({
+        _id: mongoose.Types.ObjectId(),
+        name: techStack.name
+      })
     }
-    return res.json(updatedProject);
+    await project.save();
+    return res.json(project);
   } catch (err) {
     res.status(500).json({
       error: "Something went wrong",
