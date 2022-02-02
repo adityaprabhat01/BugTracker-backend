@@ -17,7 +17,8 @@ const {
 const {
   addProject,
   deleteProject,
-  updateProject,
+  updateProjectBody,
+  updateProjectTechStack,
   addMembers,
   removeMember,
   getProject,
@@ -35,7 +36,8 @@ router.get("/logout", logout);
 // Project Controller
 router.post("/addProject", addProject);
 router.post("/deleteProject", deleteProject);
-router.post("/updateProject", updateProject);
+router.post("/updateProjectBody", updateProjectBody);
+router.post("/updateProjectTechStack", updateProjectTechStack);
 router.post("/addMembers", addMembers);
 router.post("/removeMember", removeMember);
 router.get("/getProject/:project_id", getProject);

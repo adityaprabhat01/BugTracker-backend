@@ -1,6 +1,7 @@
 const mongoose = require("mongoose");
 const { Project } = require("../models/Project");
 const { UserCache } = require("../models/UserCache");
+const { User } = require("../models/User");
 const { UserDetail } = require("../models/UserDetail");
 const { isObjectEmpty } = require("../utils");
 
@@ -70,10 +71,10 @@ const deleteProject = async (req, res) => {
   }
 };
 
-// Update title, body, techStack
+// Update body, techStack
 
-const updateProject = async (req, res) => {
-  const { project_id, body, techStack } = req.body;
+const updateProjectBody = async (req, res) => {
+  const { project_id, body } = req.body;
   try {
     const project = await Project.findOne({ _id: project_id });
     if (isObjectEmpty(project)) {
@@ -82,15 +83,51 @@ const updateProject = async (req, res) => {
       });
     }
     project.body = body;
-    if(techStack.name !== "") {
-      project.techStack.push({
-        _id: mongoose.Types.ObjectId(),
-        name: techStack.name
-      })
-    }
     await project.save();
-    return res.json(project);
+    return res.json({
+      body: project.body
+    });
   } catch (err) {
+
+  }
+}
+
+const updateProjectTechStack = async (req, res) => {
+  const { project_id, name, type, techStack_id } = req.body;
+  try {
+    const project = await Project.findOne({ _id: project_id });
+    if (isObjectEmpty(project)) {
+      return res.json({
+        message: `Project ${title} does not exist`,
+      });
+    }
+    
+    switch(type) {
+      case "ADD": {
+        if(name !== "") {
+          project.techStack.push({
+            _id: mongoose.Types.ObjectId(),
+            name
+          })
+        }
+        await project.save();
+        return res.json({
+          techStack: project.techStack
+        });
+        break;
+      }
+      case "REMOVE": {
+        const { techStack } = project;
+        const updatedTechStack = techStack.filter(stack => stack.id !== techStack_id);
+        project.techStack = updatedTechStack;
+        await project.save();
+        return res.json({
+          techStack: project.techStack
+        });
+      }
+    }    
+  } catch (err) {
+    console.log(err)
     res.status(500).json({
       error: "Something went wrong",
     });
@@ -100,7 +137,7 @@ const updateProject = async (req, res) => {
 // Add members into project
 
 const addMembers = async (req, res) => {
-  const { user_id, name, username, profileImageUrl, project_id } =
+  const { username, project_id } =
     req.body;
   try {
     // Add into Project model
@@ -110,27 +147,41 @@ const addMembers = async (req, res) => {
         message: `Project does not exist`,
       });
     }
+
+    const user = await User.findOne({ username });
+    if(isObjectEmpty(user)) {
+      return res.json({
+        message: `User does not exist`,
+      });
+    }
+
+
+    const { name } = user;
     const { members } = project;
+    
     const filtered_members = members.filter(
-      (member) => member.user_id.toString() === user_id
+      (member) => member.user_id.toString() === user.id
     );
     if (filtered_members.length !== 0) {
       return res.json({
         message: `${username} is already present in the project`,
       });
     }
+    
     const user_detail = await new UserDetail({
       name,
       username,
-      user_id,
-      profileImageUrl,
+      user_id: user.id
     });
+    
+    
+    
     project.members.push(user_detail);
     await project.save();
-
+    
     // Update UserCache model
     {
-      const user_cache = await UserCache.findOne({ user_id });
+      const user_cache = await UserCache.findOne({ user_id: user._id });
       const { projects } = user_cache;
       const filtered_cache = projects.filter(
         (project) => project.toString() === project_id
@@ -149,6 +200,7 @@ const addMembers = async (req, res) => {
 
     return res.json(user_detail);
   } catch (err) {
+    console.log(err)
     res.status(500).json({
       error: "Something went wrong",
     });
@@ -235,7 +287,8 @@ const getProjectsOfUser = async (req, res) => {
 module.exports = {
   addProject,
   deleteProject,
-  updateProject,
+  updateProjectBody,
+  updateProjectTechStack,
   addMembers,
   removeMember,
   getProject,
