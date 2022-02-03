@@ -156,7 +156,7 @@ const addMembers = async (req, res) => {
     }
 
 
-    const { name } = user;
+    
     const { members } = project;
     
     const filtered_members = members.filter(
@@ -168,6 +168,7 @@ const addMembers = async (req, res) => {
       });
     }
     
+    const { name } = user;
     const user_detail = await new UserDetail({
       name,
       username,
