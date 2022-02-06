@@ -10,6 +10,11 @@ const { isObjectEmpty } = require("../utils");
 
 const addBug = async (req, res) => {
   const { title, body, user, project_id } = req.body;
+  const labels = [
+    { name: "feature", assigned: false, _id: mongoose.Types.ObjectId() },
+    { name: "bug", assigned: false, _id: mongoose.Types.ObjectId() },
+    { name: "issue", assigned: false, _id: mongoose.Types.ObjectId() }
+  ]
   try {
     // save new bug
     const newBug = new Bug({
@@ -18,6 +23,7 @@ const addBug = async (req, res) => {
       user,
       project_id,
       isOpen: true,
+      labels
     });
     const bug = await newBug.save();
 
@@ -168,7 +174,7 @@ const removeMemberBug = async (req, res) => {
 const getBug = async (req, res) => {
   const { bug_id } = req.params;
   try {
-    const bug = await Bug.findOne({ _id: bug_id });
+    const bug = await Bug.findOne({ _id: bug_id }).populate("comments");
     if (isObjectEmpty(bug)) {
       return res.json({
         message: "Bug does not exist",
@@ -247,6 +253,27 @@ const reopenBug = async (req, res) => {
   }
 };
 
+const updateLabel = async (req, res) => {
+  const { bug_id, labels } = req.body;
+  try {
+    const bug = await Bug.findOne({ _id: bug_id });
+    if (isObjectEmpty(bug)) {
+      return res.json({
+        message: "Bug does not exist",
+      });
+    }
+    bug.labels = labels;
+    await bug.save();
+    res.json({
+      labels
+    })
+  } catch(err) {
+    res.json({
+      error: "Something went wrong",
+    });
+  }
+}
+
 module.exports = {
   addBug,
   updateBug,
@@ -256,4 +283,5 @@ module.exports = {
   getBugsOfUser,
   closeBug,
   reopenBug,
+  updateLabel
 };

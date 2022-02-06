@@ -8,6 +8,7 @@ const {
   getBugsOfUser,
   closeBug,
   reopenBug,
+  updateLabel,
 } = require("./controllers/bugController");
 const {
   postComment,
@@ -52,6 +53,7 @@ router.get("/getBug/:bug_id", getBug);
 router.get("/getBugsOfUser/:user_id", getBugsOfUser);
 router.post("/closeBug", closeBug);
 router.post("/reopenBug", reopenBug);
+router.post("/updateLabel", updateLabel);
 
 // Comment controller
 router.post("/postComment", postComment);

@@ -2,6 +2,11 @@ const mongoose = require('mongoose')
 const { commentSchema } = require('./Comment')
 const { userDetailSchema } = require('./UserDetail')
 
+const labelSchema = mongoose.Schema({
+  name: String,
+  assigned: Boolean
+})
+
 const bugSchema = mongoose.Schema({
   title: {
     type: String,
@@ -30,7 +35,7 @@ const bugSchema = mongoose.Schema({
     ref: 'Comment'
   }],
   labels: [{
-    type: String
+    type: labelSchema
   }],
   members: [{ type: userDetailSchema }]
 })

@@ -15,7 +15,7 @@ const postComment = async (req, res) => {
 
     const bug = await Bug.findOne({ _id: bug_id });
     const { comments } = bug;
-    comments.push(comment._id)
+    comments.push(comment.id)
     await bug.save();
 
     res.json(comment);
