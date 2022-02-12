@@ -2,6 +2,7 @@ const { User } = require("../models/User");
 const jwt = require("jsonwebtoken");
 const { isObjectEmpty } = require("../utils");
 const { UserCache } = require("../models/UserCache");
+const { Notification } = require("../models/Notification");
 
 const createToken = (id) => {
   const maxAge = 3 * 24 * 60 * 60;
@@ -43,7 +44,16 @@ const signup = async (req, res) => {
     const newUserCache = new UserCache({
       user_id: user._id
     })
-    const cached = await newUserCache.save();    
+    const cached = await newUserCache.save();  
+    
+    const newNotification = new Notification({
+      user_id: user._id,
+      name: user.name,
+      username: user.username,
+      notifications: [],
+    })
+    await newNotification.save();
+
     const token = createToken(user._id);
     res.cookie("jwt", token, { httpOnly: true });
     res.cookie("username", user.username);
