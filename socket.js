@@ -10,11 +10,14 @@ async function add_to_project(payload, socket) {
 
   const socket_id = await userid_to_socket.get(user.id);
   const checkOnline = await client.get(socket_id);
+
   
+
   console.log(checkOnline);
   if (checkOnline !== null) {
     console.log(checkOnline);
     const obj = JSON.parse(checkOnline);
+    console.log(socket_id)
     socket.broadcast.to(socket_id).emit("added-to-project-success", {
       message: `${payload.username} add you to the project ${payload.title}`,
     });
@@ -46,37 +49,49 @@ async function onCloseTab(payload, socket) {
 }
 
 async function onLogin(payload, socket) {
-  const obj = JSON.stringify({
-    username: payload.username,
-    user_id: payload.user_id,
-    name: payload.name,
-  });
-  await client.set(socket.id, obj);
-  await userid_to_socket.set(payload.user_id, socket.id);
-
-  socket.emit("success", {
-    message: true
-  })
-
-  const x = await client.get(socket.id);
-  console.log(x);
-}
-
-async function checkOnlineStatus(payload, socket) {
   const id = socket.id;
   const checkOnline = await client.get(id);
-  console.log(checkOnline, id)
+
+  console.log(checkOnline, id);
+
   if (checkOnline !== null) {
-    socket.broadcast.to(id).emit("online-status", {
-      online: true
+    socket.emit("online-status", {
+      online: true,
     });
   } else {
-    console.log("false",id)
-    socket.emit("online-status", {
-      online: false
+    const obj = JSON.stringify({
+      username: payload.username,
+      user_id: payload.user_id,
+      name: payload.name,
+    });
+
+    await client.set(socket.id, obj);
+    await userid_to_socket.set(payload.user_id, socket.id);
+
+    const x = await client.get(socket.id);
+    console.log(x);
+
+    socket.emit("success", {
+      message: true,
     });
   }
 }
+
+// async function checkOnlineStatus(payload, socket) {
+//   const id = socket.id;
+//   const checkOnline = await client.get(id);
+//   console.log(checkOnline, id);
+//   if (checkOnline !== null) {
+//     socket.emit("online-status", {
+//       online: true,
+//     });
+//   } else {
+//     console.log("false", id);
+//     socket.emit("online-status", {
+//       online: false,
+//     });
+//   }
+// }
 
 function socketCallback(socket) {
   console.log("Socket activated");
@@ -93,9 +108,9 @@ function socketCallback(socket) {
     onLogin(payload, socket);
   });
 
-  socket.on("check-online-status", payload => {
-    checkOnlineStatus(payload, socket);
-  })
+  // socket.on("check-online-status", (payload) => {
+  //   checkOnlineStatus(payload, socket);
+  // });
 }
 
 module.exports = {
