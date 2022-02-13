@@ -3,7 +3,6 @@ const mongoose = require("mongoose");
 const http = require("http");
 require("dotenv").config();
 const cors = require("cors")
-const redis = require('redis');
 
 const routes = require("./routes");
 const { socketCallback } = require("./socket");
@@ -17,25 +16,6 @@ const io = require("socket.io")(server, {
     origin: "*",
   },
 });
-
-
-
-
-
-
-
-(
-  async function() {
-    const client = redis.createClient({
-      url: "redis://aditya:Aditya@907@redis-18141.c212.ap-south-1-1.ec2.cloud.redislabs.com:18141"
-    });
-    await client.connect();
-    await client.set('key', 'valueeeeeeeeeeee');
-    const value = await client.get('key');
-    console.log(value)
-  }
-)()
-
 
 app.use(cors({
   origin : 'http://localhost:3000',
@@ -53,6 +33,7 @@ app.use(function(req, res, next) {
 })
 app.use(express.json());
 
+
 mongoose
   .connect(process.env.DB_CONNECT, {
     useNewUrlParser: true,
@@ -64,7 +45,6 @@ mongoose
 app.use("", routes);
 
 io.on("connection", (socket) => { socketCallback(socket) })
-
 
 server.listen(PORT, () =>
   console.log(`Server running at http://localhost:${PORT}/`)
