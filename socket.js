@@ -4,32 +4,23 @@ const { client } = require("./redis");
 const { userid_to_socket } = require("./redis");
 
 async function add_to_project(payload, socket) {
-  const { username } = payload;
+  const { username, title, auth } = payload;
   const user = await User.findOne({ username });
   const notification = await Notification.findOne({ user_id: user._id });
 
   const socket_id = await userid_to_socket.get(user.id);
-  const checkOnline = await client.get(socket_id);
-
-  
-
-  console.log(checkOnline);
-  if (checkOnline !== null) {
-    console.log(checkOnline);
-    const obj = JSON.parse(checkOnline);
-    console.log(socket_id)
+  if(socket_id !== null || socket_id !== "") {
     socket.broadcast.to(socket_id).emit("added-to-project-success", {
-      message: `${payload.username} add you to the project ${payload.title}`,
+      message: `${auth} added you to the project ${title}`,
     });
-  } else {
-    const { notifications } = notification;
-    notifications.push({
-      socket_id: socket.id,
-      payload,
-      message: `${payload.username} add you to the project ${payload.title}`,
-    });
-    await notification.save();
   }
+  const { notifications } = notification;
+  notifications.push({
+    socket_id: socket.id,
+    payload,
+    message: `${auth} added you to the project ${title}`,
+  });
+  await notification.save();
 }
 
 async function onCloseTab(payload, socket) {
@@ -51,9 +42,6 @@ async function onCloseTab(payload, socket) {
 async function onLogin(payload, socket) {
   const id = socket.id;
   const checkOnline = await client.get(id);
-
-  console.log(checkOnline, id);
-
   if (checkOnline !== null) {
     socket.emit("online-status", {
       online: true,
@@ -68,30 +56,42 @@ async function onLogin(payload, socket) {
     await client.set(socket.id, obj);
     await userid_to_socket.set(payload.user_id, socket.id);
 
-    const x = await client.get(socket.id);
-    console.log(x);
-
     socket.emit("success", {
       message: true,
     });
   }
 }
 
-// async function checkOnlineStatus(payload, socket) {
-//   const id = socket.id;
-//   const checkOnline = await client.get(id);
-//   console.log(checkOnline, id);
-//   if (checkOnline !== null) {
-//     socket.emit("online-status", {
-//       online: true,
-//     });
-//   } else {
-//     console.log("false", id);
-//     socket.emit("online-status", {
-//       online: false,
-//     });
-//   }
-// }
+async function add_to_bug(payload, socket) {
+  const { username, auth, title } = payload;
+  const user = await User.findOne({ username });
+  const notification = await Notification.findOne({ user_id: user._id });
+
+  const socket_id = await userid_to_socket.get(user.id);
+  
+  if(socket_id !== null || socket_id !== "") {
+    socket.broadcast.to(socket_id).emit("added-to-bug-success", {
+      message: `${auth} assigned you the bug ${title}`,
+    });
+  }
+  const { notifications } = notification;
+  notifications.push({
+    socket_id,
+    payload,
+    message: `${payload.username} assigned you the bug ${payload.title}`,
+  });
+  await notification.save();
+}
+
+async function comment_on_bug(payload, socket) {
+  const { members, auth, bug_id } = payload;
+  for(let i=0;i<members.length;i++) {
+    const socket_id = await userid_to_socket.get(members[i].user_id);
+    socket.broadcast.to(socket_id).emit("comment-on-bug-success", {
+      message: `${auth} commented on bug ${bug_id}`
+    })
+  }
+}
 
 function socketCallback(socket) {
   console.log("Socket activated");
@@ -108,9 +108,13 @@ function socketCallback(socket) {
     onLogin(payload, socket);
   });
 
-  // socket.on("check-online-status", (payload) => {
-  //   checkOnlineStatus(payload, socket);
-  // });
+  socket.on("added-to-bug", payload => {
+    add_to_bug(payload, socket)
+  })
+
+  socket.on("comment-on-bug", payload => {
+    comment_on_bug(payload, socket);
+  })
 }
 
 module.exports = {
