@@ -15,6 +15,7 @@ const {
   updateComment,
   deleteComment,
 } = require("./controllers/commentController");
+const { getNotifications } = require("./controllers/notificationController");
 const {
   addProject,
   deleteProject,
@@ -59,5 +60,8 @@ router.post("/updateLabel", updateLabel);
 router.post("/postComment", postComment);
 router.post("/updateComment", updateComment);
 router.post("/deleteComment", deleteComment);
+
+// Notification controller
+router.get("/getNotification/:user_id", getNotifications);
 
 module.exports = router;
