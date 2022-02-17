@@ -1,3 +1,4 @@
+const mongoose = require("mongoose");
 const { Notification } = require("./models/Notification");
 const { User } = require("./models/User");
 const { client } = require("./redis");
@@ -16,9 +17,11 @@ async function add_to_project(payload, socket) {
   }
   const { notifications } = notification;
   notifications.push({
+    _id: mongoose.Types.ObjectId(),
     socket_id: socket.id,
     payload,
     message: `${auth} added you to the project ${title}`,
+    seen: false
   });
   await notification.save();
 }
@@ -27,16 +30,9 @@ async function onCloseTab(payload, socket) {
   const user = await client.get(socket.id);
   const obj = JSON.parse(user);
   const { user_id } = obj;
-
-  const y = await userid_to_socket.get(user_id);
-  console.log(y);
-
   await userid_to_socket.del(user_id);
   await client.del(socket.id);
-
   const x = await userid_to_socket.get(user_id);
-  console.log(x);
-  console.log("Disconnect");
 }
 
 async function onLogin(payload, socket) {
@@ -76,9 +72,11 @@ async function add_to_bug(payload, socket) {
   }
   const { notifications } = notification;
   notifications.push({
+    _id: mongoose.Types.ObjectId(),
     socket_id,
     payload,
     message: `${payload.username} assigned you the bug ${payload.title}`,
+    seen: false,
   });
   await notification.save();
 }
@@ -93,8 +91,22 @@ async function comment_on_bug(payload, socket) {
   }
 }
 
+async function check_socket_in_redis(payload, socket) {
+  const user = await client.get(socket.id);
+  if(user) {
+    socket.emit("check-redis-status", {
+      message: true
+    })
+  }
+  else {
+    socket.emit("check-redis-status", {
+      message: false
+    })
+  }
+}
+
 function socketCallback(socket) {
-  console.log("Socket activated");
+  console.log("Socket activated ", socket.id);
 
   socket.on("added-to-project", (payload) => {
     add_to_project(payload, socket);
@@ -114,6 +126,10 @@ function socketCallback(socket) {
 
   socket.on("comment-on-bug", payload => {
     comment_on_bug(payload, socket);
+  })
+
+  socket.on("check-redis", payload => {
+    check_socket_in_redis(payload, socket)
   })
 }
 
