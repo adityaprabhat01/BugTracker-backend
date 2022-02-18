@@ -10,7 +10,7 @@ async function add_to_project(payload, socket) {
   const notification = await Notification.findOne({ user_id: user._id });
 
   const socket_id = await userid_to_socket.get(user.id);
-  if(socket_id !== null || socket_id !== "") {
+  if (socket_id !== null || socket_id !== "") {
     socket.broadcast.to(socket_id).emit("added-to-project-success", {
       message: `${auth} added you to the project ${title}`,
     });
@@ -21,7 +21,7 @@ async function add_to_project(payload, socket) {
     socket_id: socket.id,
     payload,
     message: `${auth} added you to the project ${title}`,
-    seen: false
+    seen: false,
   });
   await notification.save();
 }
@@ -64,8 +64,8 @@ async function add_to_bug(payload, socket) {
   const notification = await Notification.findOne({ user_id: user._id });
 
   const socket_id = await userid_to_socket.get(user.id);
-  
-  if(socket_id !== null || socket_id !== "") {
+
+  if (socket_id !== null || socket_id !== "") {
     socket.broadcast.to(socket_id).emit("added-to-bug-success", {
       message: `${auth} assigned you the bug ${title}`,
     });
@@ -83,25 +83,34 @@ async function add_to_bug(payload, socket) {
 
 async function comment_on_bug(payload, socket) {
   const { members, auth, bug_id } = payload;
-  for(let i=0;i<members.length;i++) {
+  for (let i = 0; i < members.length; i++) {
     const socket_id = await userid_to_socket.get(members[i].user_id);
     socket.broadcast.to(socket_id).emit("comment-on-bug-success", {
-      message: `${auth} commented on bug ${bug_id}`
-    })
+      message: `${auth} commented on the bug ${bug_id}`,
+    });
+    // const notification = await Notification.findOne({ user_id: auth });
+    // const { notifications } = notification;
+    // notifications.push({
+    //   _id: mongoose.Types.ObjectId(),
+    //   socket_id,
+    //   payload,
+    //   message: `${auth} commented on the bug ${bug_id}`,
+    //   seen: false,
+    // });
+    // await notification.save();
   }
 }
 
 async function check_socket_in_redis(payload, socket) {
   const user = await client.get(socket.id);
-  if(user) {
+  if (user) {
     socket.emit("check-redis-status", {
-      message: true
-    })
-  }
-  else {
+      message: true,
+    });
+  } else {
     socket.emit("check-redis-status", {
-      message: false
-    })
+      message: false,
+    });
   }
 }
 
@@ -120,17 +129,17 @@ function socketCallback(socket) {
     onLogin(payload, socket);
   });
 
-  socket.on("added-to-bug", payload => {
-    add_to_bug(payload, socket)
-  })
+  socket.on("added-to-bug", (payload) => {
+    add_to_bug(payload, socket);
+  });
 
-  socket.on("comment-on-bug", payload => {
+  socket.on("comment-on-bug", (payload) => {
     comment_on_bug(payload, socket);
-  })
+  });
 
-  socket.on("check-redis", payload => {
-    check_socket_in_redis(payload, socket)
-  })
+  socket.on("check-redis", (payload) => {
+    check_socket_in_redis(payload, socket);
+  });
 }
 
 module.exports = {
