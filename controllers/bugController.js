@@ -11,9 +11,9 @@ const { isObjectEmpty } = require("../utils");
 const addBug = async (req, res) => {
   const { title, body, user, project_id } = req.body;
   const labels = [
-    { name: "feature", assigned: false, _id: mongoose.Types.ObjectId() },
-    { name: "bug", assigned: false, _id: mongoose.Types.ObjectId() },
-    { name: "issue", assigned: false, _id: mongoose.Types.ObjectId() }
+    { name: "feature", assigned: false, _id: mongoose.Types.ObjectId(), color: "green" },
+    { name: "bug", assigned: false, _id: mongoose.Types.ObjectId(), color: "red"},
+    { name: "issue", assigned: false, _id: mongoose.Types.ObjectId(), color: "blue" }
   ]
   try {
     // save new bug
@@ -226,7 +226,9 @@ const closeBug = async (req, res) => {
     }
     bug.isOpen = false;
     const updatedBug = await bug.save();
-    res.json(updatedBug);
+    res.json({
+      isOpen: bug.isOpen
+    });
   } catch (err) {
     res.json({
       error: "Something went wrong",

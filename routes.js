@@ -15,7 +15,7 @@ const {
   updateComment,
   deleteComment,
 } = require("./controllers/commentController");
-const { getNotifications } = require("./controllers/notificationController");
+const { getNotifications, markAsRead } = require("./controllers/notificationController");
 const {
   addProject,
   deleteProject,
@@ -26,7 +26,7 @@ const {
   getProject,
   getProjectsOfUser,
 } = require("./controllers/projectController");
-const { signup, login, logout } = require("./controllers/userController");
+const { signup, login, logout, getUser } = require("./controllers/userController");
 
 const router = express.Router();
 
@@ -34,6 +34,7 @@ const router = express.Router();
 router.post("/signup", signup);
 router.post("/login", login);
 router.get("/logout", logout);
+router.get("/getUser/:username", getUser);
 
 // Project Controller
 router.post("/addProject", addProject);
@@ -63,5 +64,6 @@ router.post("/deleteComment", deleteComment);
 
 // Notification controller
 router.get("/getNotification/:user_id", getNotifications);
+router.post("/markAsRead", markAsRead);
 
 module.exports = router;

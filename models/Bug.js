@@ -4,7 +4,8 @@ const { userDetailSchema } = require('./UserDetail')
 
 const labelSchema = mongoose.Schema({
   name: String,
-  assigned: Boolean
+  assigned: Boolean,
+  color: String
 })
 
 const bugSchema = mongoose.Schema({

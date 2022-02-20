@@ -42,30 +42,31 @@ const signup = async (req, res) => {
     const user = await newUser.save();
 
     const newUserCache = new UserCache({
-      user_id: user._id
-    })
-    const cached = await newUserCache.save();  
-    
+      user_id: user._id,
+    });
+    const cached = await newUserCache.save();
+
     const newNotification = new Notification({
       user_id: user._id,
       name: user.name,
       username: user.username,
       notifications: [],
-    })
+    });
     await newNotification.save();
 
     const token = createToken(user._id);
     res.cookie("jwt", token, { httpOnly: true });
     res.cookie("username", user.username);
-    res.cookie("user_id", user.id)
+    res.cookie("user_id", user.id);
+    res.cookie("name", user.name);
     return res.status(201).json({
       user_id: user._id,
       name: user.name,
       username: user.username,
-      email: user.email
+      email: user.email,
     });
   } catch (err) {
-    console.log(err)
+    console.log(err);
     res.status(500).json({
       error: "Something went wrong",
     });
@@ -87,6 +88,7 @@ const login = async (req, res) => {
       res.cookie("jwt", token, { httpOnly: true });
       res.cookie("username", user.username);
       res.cookie("user_id", user.id);
+      res.cookie("name", user.name);
       return res.status(201).json({
         user_id: user._id,
         name: user.name,
@@ -98,7 +100,6 @@ const login = async (req, res) => {
       });
     }
   } catch (err) {
-    console.log(err)
     res.status(500).json({
       error: "Something went wrong",
     });
@@ -115,8 +116,28 @@ const logout = (req, res) => {
   });
 };
 
+// get user
+const getUser = async (req, res) => {
+  const { username } = req.params;
+  try {
+    const user = await User.findOne({ username });
+    if (!user) {
+      res.json({
+        message: "User does not exist",
+      });
+    } else {
+      res.send(user);
+    }
+  } catch (err) {
+    res.status(500).json({
+      error: "Something went wrong",
+    });
+  }
+};
+
 module.exports = {
   signup,
   login,
   logout,
+  getUser
 };
