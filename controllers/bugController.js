@@ -64,7 +64,9 @@ const updateBug = async (req, res) => {
     }
     bug.body = body;
     const updatedBug = await bug.save();
-    res.json(updatedBug);
+    res.json({
+      body: updateBug.body
+    });
   } catch (err) {
     return res.json({
       error: "Something went wrong",
