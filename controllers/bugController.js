@@ -124,9 +124,12 @@ const addMemberBug = async (req, res) => {
           message: `${username} is already a member in the bug`,
         });
       }
-      const bug_id = bug._id;
-      bugs.push(bug_id);
-      await user_cache.save();
+      {
+        const bug_id = bug._id;
+        bugs.push(bug_id);
+        await user_cache.save();
+      }
+      
     }
 
     return res.json(user_detail);
