@@ -26,7 +26,7 @@ const {
   getProject,
   getProjectsOfUser,
 } = require("./controllers/projectController");
-const { signup, login, logout, getUser } = require("./controllers/userController");
+const { signup, login, logout, getUser, getUserCache } = require("./controllers/userController");
 
 const router = express.Router();
 
@@ -35,6 +35,7 @@ router.post("/signup", signup);
 router.post("/login", login);
 router.get("/logout", logout);
 router.get("/getUser/:username", getUser);
+router.get("/getUserCache/:username", getUserCache);
 
 // Project Controller
 router.post("/addProject", addProject);

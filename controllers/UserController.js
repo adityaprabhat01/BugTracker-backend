@@ -43,6 +43,7 @@ const signup = async (req, res) => {
 
     const newUserCache = new UserCache({
       user_id: user._id,
+      username
     });
     const cached = await newUserCache.save();
 
@@ -135,9 +136,29 @@ const getUser = async (req, res) => {
   }
 };
 
+// get user cache
+const getUserCache = async (req, res) => {
+  const { username } = req.params;
+  try {
+    const user = await UserCache.findOne({ username }).populate("projects").populate("bugs");
+    if (!user) {
+      res.json({
+        message: "User does not exist",
+      });
+    } else {
+      res.send(user);
+    }
+  } catch(err) {
+    res.status(500).json({
+      error: "Something went wrong",
+    });
+  }
+}
+
 module.exports = {
   signup,
   login,
   logout,
-  getUser
+  getUser,
+  getUserCache
 };

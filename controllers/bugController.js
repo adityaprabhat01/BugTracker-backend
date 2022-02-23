@@ -217,6 +217,7 @@ const getBugsOfUser = async (req, res) => {
 
 const closeBug = async (req, res) => {
   const { bug_id, user_id } = req.body;
+  
   try {
     const bug = await Bug.findOne({ _id: bug_id });
     if (isObjectEmpty(bug)) {

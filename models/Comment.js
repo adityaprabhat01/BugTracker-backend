@@ -5,6 +5,10 @@ const commentSchema = mongoose.Schema({
   user: {
     type: userDetailSchema,
   },
+  activity: {
+    isActivity: Boolean,
+    value: String
+  },
   body: {
     type: String,
     required: true,

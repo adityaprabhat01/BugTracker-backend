@@ -83,22 +83,41 @@ async function add_to_bug(payload, socket) {
 
 async function comment_on_bug(payload, socket) {
   const { members, auth, bug_id } = payload;
-  for (let i = 0; i < members.length; i++) {
-    const socket_id = await userid_to_socket.get(members[i].user_id);
+  // for (let i = 0; i < members.length; i++) {
+  //   const socket_id = await userid_to_socket.get(members[i].user_id);
+  //   socket.broadcast.to(socket_id).emit("comment-on-bug-success", {
+  //     message: `${auth} commented on the bug ${bug_id}`,
+  //   });
+  //   const notification = await Notification.findOne({ user_id: auth });
+  //   const { notifications } = notification;
+  //   notifications.push({
+  //     _id: mongoose.Types.ObjectId(),
+  //     socket_id,
+  //     payload,
+  //     message: `${auth} commented on the bug ${bug_id}`,
+  //     seen: false,
+  //   });
+  //   const x = await notification.save();
+  //   console.log(x)
+  // }
+  console.log(members)
+  members.forEach(async member => {
+    const socket_id = await userid_to_socket.get(member.user_id);
     socket.broadcast.to(socket_id).emit("comment-on-bug-success", {
       message: `${auth} commented on the bug ${bug_id}`,
     });
-    // const notification = await Notification.findOne({ user_id: auth });
-    // const { notifications } = notification;
-    // notifications.push({
-    //   _id: mongoose.Types.ObjectId(),
-    //   socket_id,
-    //   payload,
-    //   message: `${auth} commented on the bug ${bug_id}`,
-    //   seen: false,
-    // });
-    // await notification.save();
-  }
+    const notification = await Notification.findOne({ user_id: auth });
+      const { notifications } = notification;
+      notifications.push({
+        _id: mongoose.Types.ObjectId(),
+        socket_id,
+        payload,
+        message: `${auth} commented on the bug ${bug_id}`,
+        seen: false,
+      });
+      const x = await notification.save();
+      console.log(x)
+  });
 }
 
 async function check_socket_in_redis(payload, socket) {

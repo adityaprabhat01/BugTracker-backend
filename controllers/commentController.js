@@ -3,13 +3,14 @@ const { Comment } = require("../models/Comment");
 const { isObjectEmpty } = require("../utils");
 
 const postComment = async (req, res) => {
-  const { user, body, bug_id, project_id } = req.body;
+  const { user, body, bug_id, project_id, activity } = req.body;
   try {
     const newComment = new Comment({
       user,
       body,
       bug_id,
-      project_id
+      project_id,
+      activity
     })
     const comment = await newComment.save();
 
@@ -20,6 +21,7 @@ const postComment = async (req, res) => {
 
     res.json(comment);
   } catch (err) {
+    console.log(err)
     res.json({
       error: "Something went wrong"
     })
