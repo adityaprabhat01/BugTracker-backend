@@ -5,6 +5,12 @@ const { isObjectEmpty } = require("../utils");
 const postComment = async (req, res) => {
   const { user, body, bug_id, project_id, activity } = req.body;
   try {
+    const bug = await Bug.findOne({ _id: bug_id });
+    if (bug.user.user_id.toString() !== user.user_id) {
+      return res.json({
+        message: "User not authorized to close the bug",
+      });
+    }
     const newComment = new Comment({
       user,
       body,
@@ -14,7 +20,7 @@ const postComment = async (req, res) => {
     })
     const comment = await newComment.save();
 
-    const bug = await Bug.findOne({ _id: bug_id });
+    
     const { comments } = bug;
     comments.push(comment.id)
     await bug.save();
@@ -49,8 +55,15 @@ const updateComment = async (req, res) => {
 
 const deleteComment = async (req, res) => {
   const { comment_id, user_id, bug_id } = req.body;
+  
   try {
     // Delete from the Comment model
+    const comment = await Comment.findOne({ _id: comment_id });
+    if(comment.user.user_id.toString() !== user_id) {
+      return res.json({
+        message: "User is not authorized to delete the comment"
+      })
+    }
     const deletedComment = await Comment.findOneAndDelete({ _id: comment_id });
     
     // update the Bug model
