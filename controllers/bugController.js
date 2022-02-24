@@ -166,7 +166,9 @@ const removeMemberBug = async (req, res) => {
     user_cache.bugs = filtered_cache;
     await user_cache.save();
 
-    return res.json(updatedBug);
+    return res.json({
+      user_id
+    });
   } catch (err) {
     return res.status(500).json({
       error: "Something went wrong",
@@ -243,7 +245,7 @@ const closeBug = async (req, res) => {
 };
 
 const reopenBug = async (req, res) => {
-  const { bug_id } = req.body;
+  const { bug_id, user_id } = req.body;
   try {
     const bug = await Bug.findOne({ _id: bug_id });
     if (isObjectEmpty(bug)) {
@@ -251,9 +253,16 @@ const reopenBug = async (req, res) => {
         message: "Bug does not exist",
       });
     }
+    if (bug.user.user_id.toString() !== user_id) {
+      return res.json({
+        message: "User not authorized to close the bug",
+      });
+    }
     bug.isOpen = true;
     const updatedBug = await bug.save();
-    res.json(updatedBug);
+    res.json({
+      isOpen: bug.isOpen
+    });
   } catch (err) {
     res.json({
       error: "Something went wrong",
