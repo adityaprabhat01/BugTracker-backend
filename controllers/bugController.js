@@ -25,8 +25,12 @@ const addBug = async (req, res) => {
       isOpen: true,
       labels
     });
+    const { members } = newBug;
+    members.push(user);
+    newBug.members = members;
+    
     const bug = await newBug.save();
-
+    
     // update user cache
     const user_cache = await UserCache.findOne({ user_id: user.user_id });
     const { bugs } = user_cache;
@@ -65,7 +69,7 @@ const updateBug = async (req, res) => {
     bug.body = body;
     const updatedBug = await bug.save();
     res.json({
-      body: updateBug.body
+      body: bug.body
     });
   } catch (err) {
     return res.json({
@@ -150,6 +154,11 @@ const removeMemberBug = async (req, res) => {
     if (isObjectEmpty(bug)) {
       return res.json({
         message: "Bug does not exist",
+      });
+    }
+    if(bug.user.user_id.toString() === user_id) {
+      return res.json({
+        message: "Cannot remove the author",
       });
     }
     const { members } = bug;

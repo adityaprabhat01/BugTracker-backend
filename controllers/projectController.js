@@ -16,6 +16,9 @@ const addProject = async (req, res) => {
       user,
       body,
     });
+    const { members } = newProject;
+    members.push(user);
+    newProject.members = members;
     const project = await newProject.save();
 
     // Update UserCache model
@@ -27,6 +30,7 @@ const addProject = async (req, res) => {
 
     return res.json(project);
   } catch (err) {
+    console.log(err)
     res.status(500).json({
       error: "Something went wrong",
     });
@@ -218,6 +222,11 @@ const removeMember = async (req, res) => {
     if (isObjectEmpty(project)) {
       return res.json({
         message: `Project does not exist`,
+      });
+    }
+    if(project.user.user_id.toString() === user_id) {
+      return res.json({
+        message: "Cannot remove the author",
       });
     }
     const { members } = project;
