@@ -23,7 +23,8 @@ const projectSchema = mongoose.Schema({
   projectImageUrl: {
     type: String,
   },
-  bugs: [{ type: mongoose.Types.ObjectId, ref: 'Bug' }],
+  bugs: [{ type: mongoose.Types.ObjectId, ref: "Bug" }],
+  mentionIdCurrent: Number,
 });
 
 const Project = mongoose.model("Project", projectSchema);

@@ -1,9 +1,15 @@
 const { Bug } = require("../models/Bug");
 const { Comment } = require("../models/Comment");
 const { isObjectEmpty } = require("../utils");
+const mongoose = require("mongoose");
 
 const postComment = async (req, res) => {
   const { user, body, bug_id, project_id, activity } = req.body;
+  const reactions = [
+    { name: "like", count: 0, _id: mongoose.Types.ObjectId() },
+    { name: "laugh", count: 0, _id: mongoose.Types.ObjectId() },
+    { name: "angry", count: 0, _id: mongoose.Types.ObjectId() }
+  ]
   try {
     const bug = await Bug.findOne({ _id: bug_id });
     if (bug.user.user_id.toString() !== user.user_id) {
@@ -16,7 +22,8 @@ const postComment = async (req, res) => {
       body,
       bug_id,
       project_id,
-      activity
+      activity,
+      reactions
     })
     const comment = await newComment.save();
 
@@ -27,7 +34,6 @@ const postComment = async (req, res) => {
 
     res.json(comment);
   } catch (err) {
-    console.log(err)
     res.json({
       error: "Something went wrong"
     })
@@ -86,8 +92,29 @@ const deleteComment = async (req, res) => {
   }
 }
 
+const reactToComment = async (req, res) => {
+  const { index, comment_id } = req.body;
+  try {
+    const comment = await Comment.findOne({ _id: comment_id });
+    console.log()
+    comment.reactions[index].count = comment.reactions[index].count + 1;
+    await comment.save();
+    res.json({
+      reaction: comment.reactions[index],
+      comment_id,
+      index
+    })
+  } catch (err) {
+    console.log(err)
+    res.json({
+      error: "Something went wrong"
+    })
+  }
+}
+
 module.exports = {
   postComment,
   updateComment,
-  deleteComment
+  deleteComment,
+  reactToComment
 }

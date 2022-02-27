@@ -24,7 +24,11 @@ const commentSchema = mongoose.Schema({
   project_id: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'Project'
-  }
+  },
+  reactions: [{
+    name: String,
+    count: Number,
+  }]
 });
 
 const Comment = mongoose.model('Comment', commentSchema);

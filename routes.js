@@ -14,8 +14,12 @@ const {
   postComment,
   updateComment,
   deleteComment,
+  reactToComment,
 } = require("./controllers/commentController");
-const { getNotifications, markAsRead } = require("./controllers/notificationController");
+const {
+  getNotifications,
+  markAsRead,
+} = require("./controllers/notificationController");
 const {
   addProject,
   deleteProject,
@@ -26,7 +30,13 @@ const {
   getProject,
   getProjectsOfUser,
 } = require("./controllers/projectController");
-const { signup, login, logout, getUser, getUserCache } = require("./controllers/userController");
+const {
+  signup,
+  login,
+  logout,
+  getUser,
+  getUserCache,
+} = require("./controllers/userController");
 
 const router = express.Router();
 
@@ -62,6 +72,7 @@ router.post("/updateLabel", updateLabel);
 router.post("/postComment", postComment);
 router.post("/updateComment", updateComment);
 router.post("/deleteComment", deleteComment);
+router.post("/reactToComment", reactToComment);
 
 // Notification controller
 router.get("/getNotification/:user_id", getNotifications);

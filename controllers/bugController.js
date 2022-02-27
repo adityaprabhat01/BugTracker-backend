@@ -28,7 +28,10 @@ const addBug = async (req, res) => {
     const { members } = newBug;
     members.push(user);
     newBug.members = members;
-    
+
+    const project = await Project.findOne({ _id: project_id });
+    newBug.mentionId = project.mentionIdCurrent + 1;
+    project.mentionIdCurrent = newBug.mentionId;
     const bug = await newBug.save();
     
     // update user cache
@@ -40,7 +43,6 @@ const addBug = async (req, res) => {
 
     // Update Project model
     {
-      const project = await Project.findOne({ _id: project_id });
       const { bugs } = project;
       const bug_id = bug._id;
       bugs.push(bug_id);

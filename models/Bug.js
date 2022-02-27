@@ -38,7 +38,8 @@ const bugSchema = mongoose.Schema({
   labels: [{
     type: labelSchema
   }],
-  members: [{ type: userDetailSchema }]
+  members: [{ type: userDetailSchema }],
+  mentionId: Number,
 })
 
 const Bug = mongoose.model('Bug', bugSchema);

@@ -19,6 +19,7 @@ const addProject = async (req, res) => {
     const { members } = newProject;
     members.push(user);
     newProject.members = members;
+    newProject.mentionIdCurrent = 0;
     const project = await newProject.save();
 
     // Update UserCache model
