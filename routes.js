@@ -21,6 +21,13 @@ const {
   markAsRead,
 } = require("./controllers/notificationController");
 const {
+  signup,
+  login,
+  logout,
+  getUser,
+  getUserCache,
+} = require("./controllers/userController");
+const {
   addProject,
   deleteProject,
   updateProjectBody,
@@ -30,13 +37,6 @@ const {
   getProject,
   getProjectsOfUser,
 } = require("./controllers/projectController");
-const {
-  signup,
-  login,
-  logout,
-  getUser,
-  getUserCache,
-} = require("./controllers/userController");
 
 const router = express.Router();
 
