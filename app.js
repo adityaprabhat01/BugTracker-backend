@@ -8,7 +8,6 @@ const routes = require("./routes");
 const { socketCallback } = require("./socket");
 
 const app = express();
-const PORT = process.env.PORT || 5000;
 
 const server = http.createServer(app);
 const io = require("socket.io")(server, {
@@ -46,7 +45,7 @@ app.use("", routes);
 
 io.on("connection", (socket) => { socketCallback(socket) })
 
-server.listen(PORT, () =>
+server.listen(process.env.PORT, () =>
   console.log(`Server running at http://localhost:${PORT}/`)
 );
 
