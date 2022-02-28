@@ -27,7 +27,7 @@ const {
   logout,
   getUser,
   getUserCache,
-} = require("./controllers/userController");
+} = require("./controllers/UserController");
 const {
   addProject,
   deleteProject,
