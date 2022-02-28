@@ -29,6 +29,7 @@ async function add_to_project(payload, socket) {
 async function onCloseTab(payload, socket) {
   const user = await client.get(socket.id);
   const obj = JSON.parse(user);
+  if(obj === null) return;
   const { user_id } = obj;
   await userid_to_socket.del(user_id);
   await client.del(socket.id);
