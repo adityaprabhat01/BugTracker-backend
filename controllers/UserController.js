@@ -43,7 +43,7 @@ const signup = async (req, res) => {
 
     const newUserCache = new UserCache({
       user_id: user._id,
-      username
+      username,
     });
     const cached = await newUserCache.save();
 
@@ -56,10 +56,27 @@ const signup = async (req, res) => {
     await newNotification.save();
 
     const token = createToken(user._id);
-    res.cookie("jwt", token, { httpOnly: true });
-    res.cookie("username", user.username);
-    res.cookie("user_id", user.id);
-    res.cookie("name", user.name);
+    res.cookie("jwt", token, {
+      httpOnly: true,
+      maxAge: maxAge * 1000,
+      Secure: true,
+      SameSite: "None",
+    });
+    res.cookie("username", user.username, {
+      maxAge: maxAge * 1000,
+      Secure: true,
+      SameSite: "None",
+    });
+    res.cookie("user_id", user.id, {
+      maxAge: maxAge * 1000,
+      Secure: true,
+      SameSite: "None",
+    });
+    res.cookie("name", user.name, {
+      maxAge: maxAge * 1000,
+      Secure: true,
+      SameSite: "None",
+    });
     return res.status(201).json({
       user_id: user._id,
       name: user.name,
@@ -86,10 +103,27 @@ const login = async (req, res) => {
     const authenticated = await user.isValidPassword(password);
     if (authenticated) {
       const token = createToken(user._id);
-      res.cookie("jwt", token, { httpOnly: true });
-      res.cookie("username", user.username);
-      res.cookie("user_id", user.id);
-      res.cookie("name", user.name);
+      res.cookie("jwt", token, {
+        httpOnly: true,
+        maxAge: maxAge * 1000,
+        Secure: true,
+        SameSite: "None",
+      });
+      res.cookie("username", user.username, {
+        maxAge: maxAge * 1000,
+        Secure: true,
+        SameSite: "None",
+      });
+      res.cookie("user_id", user.id, {
+        maxAge: maxAge * 1000,
+        Secure: true,
+        SameSite: "None",
+      });
+      res.cookie("name", user.name, {
+        maxAge: maxAge * 1000,
+        Secure: true,
+        SameSite: "None",
+      });
       return res.status(201).json({
         user_id: user._id,
         name: user.name,
@@ -140,7 +174,9 @@ const getUser = async (req, res) => {
 const getUserCache = async (req, res) => {
   const { username } = req.params;
   try {
-    const user = await UserCache.findOne({ username }).populate("projects").populate("bugs");
+    const user = await UserCache.findOne({ username })
+      .populate("projects")
+      .populate("bugs");
     if (!user) {
       res.json({
         message: "User does not exist",
@@ -148,17 +184,17 @@ const getUserCache = async (req, res) => {
     } else {
       res.send(user);
     }
-  } catch(err) {
+  } catch (err) {
     res.status(500).json({
       error: "Something went wrong",
     });
   }
-}
+};
 
 module.exports = {
   signup,
   login,
   logout,
   getUser,
-  getUserCache
+  getUserCache,
 };
