@@ -19,7 +19,7 @@ const io = require("socket.io")(server, {
 
 app.use(
   cors({
-    origin: "https://focused-hugle-f9254e.netlify.app",
+    origin: ["https://focused-hugle-f9254e.netlify.app", "http://localhost:3000"],
     credentials: true,
   })
 );
