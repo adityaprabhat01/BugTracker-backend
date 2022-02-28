@@ -4,8 +4,8 @@ const http = require("http");
 require("dotenv").config();
 const cors = require("cors")
 
-const routes = require("../routes");
-const { socketCallback } = require("../socket");
+const routes = require("./routes");
+const { socketCallback } = require("./socket");
 
 const app = express();
 const PORT = process.env.PORT || 5000;
