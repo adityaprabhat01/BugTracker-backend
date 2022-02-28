@@ -20,6 +20,7 @@ const {
   getNotifications,
   markAsRead,
 } = require("./controllers/notificationController");
+
 const {
   signup,
   login,
