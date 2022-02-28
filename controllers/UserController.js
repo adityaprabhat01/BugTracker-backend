@@ -4,8 +4,9 @@ const { isObjectEmpty } = require("../utils");
 const { UserCache } = require("../models/UserCache");
 const { Notification } = require("../models/Notification");
 
+const maxAge = 3 * 24 * 60 * 60;
+
 const createToken = (id) => {
-  const maxAge = 3 * 24 * 60 * 60;
   return jwt.sign({ id }, process.env.SECRET_KEY, {
     expiresIn: maxAge,
   });
@@ -135,6 +136,7 @@ const login = async (req, res) => {
       });
     }
   } catch (err) {
+    console.log(err)
     res.status(500).json({
       error: "Something went wrong",
     });
