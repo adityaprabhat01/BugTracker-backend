@@ -60,25 +60,25 @@ const signup = async (req, res) => {
     const token = createToken(user._id);
     res.cookie("jwt", token, {
       httpOnly: true,
-      //maxAge: maxAge * 1000,
+      maxAge: maxAge * 1000,
       secure: true,
       sameSite: "None",
       //domain: req.headers.origin
     });
     res.cookie("username", user.username, {
-      //maxAge: maxAge * 1000,
+      maxAge: maxAge * 1000,
       secure: true,
       sameSite: "None",
       //domain: req.headers.origin
     });
     res.cookie("user_id", user.id, {
-      //maxAge: maxAge * 1000,
+      maxAge: maxAge * 1000,
       secure: true,
       sameSite: "None",
       //domain: req.headers.origin
     });
     res.cookie("name", user.name, {
-      //maxAge: maxAge * 1000,
+      maxAge: maxAge * 1000,
       secure: true,
       sameSite: "None",
       //domain: req.headers.origin
@@ -111,25 +111,25 @@ const login = async (req, res) => {
       const token = createToken(user._id);
       res.cookie("jwt", token, {
         httpOnly: true,
-        //maxAge: maxAge * 1000,
+        maxAge: maxAge * 1000,
         secure: true,
         sameSite: "None",
         //domain: req.headers.origin
       });
       res.cookie("username", user.username, {
-        //maxAge: maxAge * 1000,
+        maxAge: maxAge * 1000,
         secure: true,
         sameSite: "None",
         //domain: req.headers.origin
       });
       res.cookie("user_id", user.id, {
-        //maxAge: maxAge * 1000,
+        maxAge: maxAge * 1000,
         secure: true,
         sameSite: "None",
         //domain: req.headers.origin
       });
       res.cookie("name", user.name, {
-        //maxAge: maxAge * 1000,
+        maxAge: maxAge * 1000,
         secure: true,
         sameSite: "None",
         //domain: req.headers.origin
