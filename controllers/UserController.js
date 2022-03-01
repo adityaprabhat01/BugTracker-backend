@@ -65,24 +65,24 @@ const signup = async (req, res) => {
       sameSite: "None",
       //domain: req.headers.origin
     });
-    res.cookie("username", user.username, {
-      maxAge: maxAge * 1000,
-      secure: true,
-      sameSite: "None",
-      //domain: req.headers.origin
-    });
-    res.cookie("user_id", user.id, {
-      maxAge: maxAge * 1000,
-      secure: true,
-      sameSite: "None",
-      //domain: req.headers.origin
-    });
-    res.cookie("name", user.name, {
-      maxAge: maxAge * 1000,
-      secure: true,
-      sameSite: "None",
-      //domain: req.headers.origin
-    });
+    // res.cookie("username", user.username, {
+    //   maxAge: maxAge * 1000,
+    //   secure: true,
+    //   sameSite: "None",
+    //   //domain: req.headers.origin
+    // });
+    // res.cookie("user_id", user.id, {
+    //   maxAge: maxAge * 1000,
+    //   secure: true,
+    //   sameSite: "None",
+    //   //domain: req.headers.origin
+    // });
+    // res.cookie("name", user.name, {
+    //   maxAge: maxAge * 1000,
+    //   secure: true,
+    //   sameSite: "None",
+    //   //domain: req.headers.origin
+    // });
     return res.status(201).json({
       user_id: user._id,
       name: user.name,
@@ -116,24 +116,24 @@ const login = async (req, res) => {
         sameSite: "None",
         //domain: req.headers.origin
       });
-      res.cookie("username", user.username, {
-        maxAge: maxAge * 1000,
-        secure: true,
-        sameSite: "None",
-        //domain: req.headers.origin
-      });
-      res.cookie("user_id", user.id, {
-        maxAge: maxAge * 1000,
-        secure: true,
-        sameSite: "None",
-        //domain: req.headers.origin
-      });
-      res.cookie("name", user.name, {
-        maxAge: maxAge * 1000,
-        secure: true,
-        sameSite: "None",
-        //domain: req.headers.origin
-      });
+      // res.cookie("username", user.username, {
+      //   maxAge: maxAge * 1000,
+      //   secure: true,
+      //   sameSite: "None",
+      //   //domain: req.headers.origin
+      // });
+      // res.cookie("user_id", user.id, {
+      //   maxAge: maxAge * 1000,
+      //   secure: true,
+      //   sameSite: "None",
+      //   //domain: req.headers.origin
+      // });
+      // res.cookie("name", user.name, {
+      //   maxAge: maxAge * 1000,
+      //   secure: true,
+      //   sameSite: "None",
+      //   //domain: req.headers.origin
+      // });
       return res.status(201).json({
         user_id: user._id,
         name: user.name,
@@ -145,7 +145,6 @@ const login = async (req, res) => {
       });
     }
   } catch (err) {
-    console.log(err)
     res.status(500).json({
       error: "Something went wrong",
     });
