@@ -62,25 +62,25 @@ const signup = async (req, res) => {
       maxAge: maxAge * 1000,
       secure: true,
       sameSite: "None",
-      domain: "https://aditya-bug-tracker.herokuapp.com/"
+      domain: "https://aditya-bug-tracker.herokuapp.com"
     });
     res.cookie("username", user.username, {
       maxAge: maxAge * 1000,
       secure: true,
       sameSite: "None",
-      domain: "https://aditya-bug-tracker.herokuapp.com/"
+      domain: "https://aditya-bug-tracker.herokuapp.com"
     });
     res.cookie("user_id", user.id, {
       maxAge: maxAge * 1000,
       secure: true,
       sameSite: "None",
-      domain: "https://aditya-bug-tracker.herokuapp.com/"
+      domain: "https://aditya-bug-tracker.herokuapp.com"
     });
     res.cookie("name", user.name, {
       maxAge: maxAge * 1000,
       secure: true,
       sameSite: "None",
-      domain: "https://aditya-bug-tracker.herokuapp.com/"
+      domain: "https://aditya-bug-tracker.herokuapp.com"
     });
     return res.status(201).json({
       user_id: user._id,
@@ -113,25 +113,25 @@ const login = async (req, res) => {
         maxAge: maxAge * 1000,
         secure: true,
         sameSite: "None",
-        domain: "https://aditya-bug-tracker.herokuapp.com/"
+        domain: "https://aditya-bug-tracker.herokuapp.com"
       });
       res.cookie("username", user.username, {
         maxAge: maxAge * 1000,
         secure: true,
         sameSite: "None",
-        domain: "https://aditya-bug-tracker.herokuapp.com/"
+        domain: "https://aditya-bug-tracker.herokuapp.com"
       });
       res.cookie("user_id", user.id, {
         maxAge: maxAge * 1000,
         secure: true,
         sameSite: "None",
-        domain: "https://aditya-bug-tracker.herokuapp.com/"
+        domain: "https://aditya-bug-tracker.herokuapp.com"
       });
       res.cookie("name", user.name, {
         maxAge: maxAge * 1000,
         secure: true,
         sameSite: "None",
-        domain: "https://aditya-bug-tracker.herokuapp.com/"
+        domain: "https://aditya-bug-tracker.herokuapp.com"
       });
       return res.status(201).json({
         user_id: user._id,
