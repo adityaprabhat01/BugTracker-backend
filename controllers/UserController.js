@@ -60,22 +60,22 @@ const signup = async (req, res) => {
     res.cookie("jwt", token, {
       httpOnly: true,
       maxAge: maxAge * 1000,
-      Secure: true,
+      secure: true,
       sameSite: "None",
     });
     res.cookie("username", user.username, {
       maxAge: maxAge * 1000,
-      Secure: true,
+      secure: true,
       sameSite: "None",
     });
     res.cookie("user_id", user.id, {
       maxAge: maxAge * 1000,
-      Secure: true,
+      secure: true,
       sameSite: "None",
     });
     res.cookie("name", user.name, {
       maxAge: maxAge * 1000,
-      Secure: true,
+      secure: true,
       sameSite: "None",
     });
     return res.status(201).json({
@@ -107,22 +107,22 @@ const login = async (req, res) => {
       res.cookie("jwt", token, {
         httpOnly: true,
         maxAge: maxAge * 1000,
-        Secure: true,
+        secure: true,
         sameSite: "None",
       });
       res.cookie("username", user.username, {
         maxAge: maxAge * 1000,
-        Secure: true,
+        secure: true,
         sameSite: "None",
       });
       res.cookie("user_id", user.id, {
         maxAge: maxAge * 1000,
-        Secure: true,
+        secure: true,
         sameSite: "None",
       });
       res.cookie("name", user.name, {
         maxAge: maxAge * 1000,
-        Secure: true,
+        secure: true,
         sameSite: "None",
       });
       return res.status(201).json({
