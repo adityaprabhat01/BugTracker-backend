@@ -61,22 +61,22 @@ const signup = async (req, res) => {
       httpOnly: true,
       maxAge: maxAge * 1000,
       Secure: true,
-      SameSite: "None",
+      sameSite: "None",
     });
     res.cookie("username", user.username, {
       maxAge: maxAge * 1000,
       Secure: true,
-      SameSite: "None",
+      sameSite: "None",
     });
     res.cookie("user_id", user.id, {
       maxAge: maxAge * 1000,
       Secure: true,
-      SameSite: "None",
+      sameSite: "None",
     });
     res.cookie("name", user.name, {
       maxAge: maxAge * 1000,
       Secure: true,
-      SameSite: "None",
+      sameSite: "None",
     });
     return res.status(201).json({
       user_id: user._id,
@@ -108,22 +108,22 @@ const login = async (req, res) => {
         httpOnly: true,
         maxAge: maxAge * 1000,
         Secure: true,
-        SameSite: "None",
+        sameSite: "None",
       });
       res.cookie("username", user.username, {
         maxAge: maxAge * 1000,
         Secure: true,
-        SameSite: "None",
+        sameSite: "None",
       });
       res.cookie("user_id", user.id, {
         maxAge: maxAge * 1000,
         Secure: true,
-        SameSite: "None",
+        sameSite: "None",
       });
       res.cookie("name", user.name, {
         maxAge: maxAge * 1000,
         Secure: true,
-        SameSite: "None",
+        sameSite: "None",
       });
       return res.status(201).json({
         user_id: user._id,
