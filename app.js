@@ -36,10 +36,12 @@ app.use(cookieParser());
 
 app.use(
   cors({
-    origin: ["https://focused-hugle-f9254e.netlify.app", "http://localhost:3000"],
+    origin: "http://localhost:3000",
     credentials: true,
   })
 );
+
+//origin: ["https://focused-hugle-f9254e.netlify.app", "http://localhost:3000"],
 
 app.use(express.json());
 
