@@ -8,7 +8,8 @@ const notificationSchema = mongoose.Schema({
   },
   username: String,
   name: String,
-  notifications: Array
+  notifications: Array,
+  count: Number
 })
 
 const Notification = mongoose.model("Notification", notificationSchema);

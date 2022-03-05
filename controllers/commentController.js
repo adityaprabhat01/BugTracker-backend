@@ -96,7 +96,6 @@ const reactToComment = async (req, res) => {
   const { index, comment_id } = req.body;
   try {
     const comment = await Comment.findOne({ _id: comment_id });
-    console.log()
     comment.reactions[index].count = comment.reactions[index].count + 1;
     await comment.save();
     res.json({
@@ -105,7 +104,6 @@ const reactToComment = async (req, res) => {
       index
     })
   } catch (err) {
-    console.log(err)
     res.json({
       error: "Something went wrong"
     })
