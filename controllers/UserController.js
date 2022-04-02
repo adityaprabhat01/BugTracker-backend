@@ -54,6 +54,7 @@ const signup = async (req, res) => {
       name: user.name,
       username: user.username,
       notifications: [],
+      count: 0
     });
     await newNotification.save();
 
@@ -88,6 +89,7 @@ const signup = async (req, res) => {
       name: user.name,
       username: user.username,
       email: user.email,
+      jwt: token
     });
   } catch (err) {
     res.status(500).json({
@@ -137,6 +139,7 @@ const login = async (req, res) => {
         user_id: user._id,
         name: user.name,
         username: user.username,
+        jwt: token
       });
     } else {
       res.send({

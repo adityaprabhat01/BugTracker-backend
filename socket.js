@@ -17,7 +17,6 @@ const queue = async.queue(async function (item, completed) {
     Notification,
     mentionId
   } = item;
-  // completed(null, { item, remaining });
 
   asyncSave(member, auth, Notification, bug_id, Notification, socket.id, mentionId);
   asyncEmit(member, socket, auth, bug_id, userid_to_socket, mentionId);
@@ -27,11 +26,12 @@ async function comment_on_bug(payload, socket) {
   const { members, auth, bug_id, mentionId } = payload;
   members.forEach(async (member, i) => {
     async function asyncEmit(member, socket, auth, bug_id, userid_to_socket, mentionId) {
-      const socket_id = await userid_to_socket.get(member.user_id);
-      console.log(socket_id)
-      socket.broadcast.to(socket_id).emit("comment-on-bug-success", {
-        message: `${auth.username} commented on the bug ${mentionId}`,
-      });
+      const socket_id = await userid_to_socket.get(member.user_id);       
+      if(member.user_id !== auth.user_id) {
+        socket.broadcast.to(socket_id).emit("comment-on-bug-success", {
+          message: `${auth.username} commented on the bug ${mentionId}`,
+        });
+      }      
     }
     async function asyncSave(member, auth, Notification, bug_id, Notification, socket_id, mentionId) {
       const notification = await Notification.findOne({ user_id: member.user_id });
@@ -43,7 +43,7 @@ async function comment_on_bug(payload, socket) {
         payload,
         message: `${auth.username} commented on the bug ${mentionId}`,
         seen: false,
-      });
+      });      
       await notification.save();
     }
 
@@ -63,6 +63,7 @@ async function comment_on_bug(payload, socket) {
       if (err) {
         console.log(err);
       } else {
+
       }
     });
   });
@@ -79,7 +80,8 @@ async function add_to_project(payload, socket) {
       message: `${auth} added you to the project ${title}`,
     });
   }
-  const { notifications } = notification;
+  const { notifications, count } = notification;
+  notification.count = count + 1;
   notifications.push({
     _id: mongoose.Types.ObjectId(),
     socket_id: socket.id,
@@ -135,7 +137,8 @@ async function add_to_bug(payload, socket) {
       message: `${auth} assigned you the bug ${title}`,
     });
   }
-  const { notifications } = notification;
+  const { notifications, count } = notification;
+  notification.count = count + 1;
   notifications.push({
     _id: mongoose.Types.ObjectId(),
     socket_id,

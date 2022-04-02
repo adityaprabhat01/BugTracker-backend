@@ -12,11 +12,11 @@ const postComment = async (req, res) => {
   ]
   try {
     const bug = await Bug.findOne({ _id: bug_id });
-    if (bug.user.user_id.toString() !== user.user_id) {
-      return res.json({
-        message: "User not authorized to close the bug",
-      });
-    }
+    // if (bug.user.user_id.toString() !== user.user_id) {
+    //   return res.json({
+    //     message: "User not authorized to close the bug",
+    //   });
+    // }
     const newComment = new Comment({
       user,
       body,
