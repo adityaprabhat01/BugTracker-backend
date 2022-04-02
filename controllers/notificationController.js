@@ -25,19 +25,38 @@ const markAsRead = async (req, res) => {
     for (let i = 0; i < temp.length; i++) {
       if (temp[i]._id.toString() === notification_id) {
         temp[i].seen = true;
-        console.log(temp[i]);
         break;
       }
     }
     notification.notifications = temp;
     notification.markModified("notifications")
+    notification.count = notification.count - 1;
     await notification.save();
     res.send({
       read: true,
       notification_id
     });
   } catch (err) {
-    console.log(err);
+    res.json({
+      error: "Something went wrong",
+    });
+  }
+};
+
+const getNotificationCount = async (req, res) => {
+  const { user_id } = req.params;
+  try {
+    const notifications = await Notification.findOne({ user_id });
+    if (!notifications) {
+      res.json({
+        message: "User does not exist",
+      });
+    }
+    const { count } = notifications;
+    res.json({
+      count
+    });
+  } catch (err) {
     res.json({
       error: "Something went wrong",
     });
@@ -47,4 +66,5 @@ const markAsRead = async (req, res) => {
 module.exports = {
   getNotifications,
   markAsRead,
+  getNotificationCount
 };

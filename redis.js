@@ -26,8 +26,9 @@ const userid_to_socket = redis.createClient({
   url: process.env.USERID_TO_SOCKET,
 });
 
-client.connect().then(() => {})
-userid_to_socket.connect().then(() => {})
+
+client.connect().then(() => {console.log("client")}).catch(err => console.log(err))
+userid_to_socket.connect().then(() => {console.log("userid_to_socket")}).catch(err => console.log(err))
 
   module.exports = {
     client,

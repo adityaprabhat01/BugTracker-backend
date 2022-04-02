@@ -31,7 +31,6 @@ const addProject = async (req, res) => {
 
     return res.json(project);
   } catch (err) {
-    console.log(err)
     res.status(500).json({
       error: "Something went wrong",
     });
@@ -132,8 +131,7 @@ const updateProjectTechStack = async (req, res) => {
       }
     }    
   } catch (err) {
-    console.log(err)
-    res.status(500).json({
+   res.status(500).json({
       error: "Something went wrong",
     });
   }
@@ -206,7 +204,6 @@ const addMembers = async (req, res) => {
 
     return res.json(user_detail);
   } catch (err) {
-    console.log(err)
     res.status(500).json({
       error: "Something went wrong",
     });

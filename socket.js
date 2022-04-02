@@ -3,6 +3,71 @@ const { Notification } = require("./models/Notification");
 const { User } = require("./models/User");
 const { client } = require("./redis");
 const { userid_to_socket } = require("./redis");
+const async = require("async");
+
+const queue = async.queue(async function (item, completed) {
+  const {
+    asyncEmit,
+    asyncSave,
+    member,
+    auth,
+    bug_id,
+    socket,
+    userid_to_socket,
+    Notification,
+    mentionId
+  } = item;
+
+  asyncSave(member, auth, Notification, bug_id, Notification, socket.id, mentionId);
+  asyncEmit(member, socket, auth, bug_id, userid_to_socket, mentionId);
+}, 1);
+
+async function comment_on_bug(payload, socket) {
+  const { members, auth, bug_id, mentionId } = payload;
+  members.forEach(async (member, i) => {
+    async function asyncEmit(member, socket, auth, bug_id, userid_to_socket, mentionId) {
+      const socket_id = await userid_to_socket.get(member.user_id);       
+      if(member.user_id !== auth.user_id) {
+        socket.broadcast.to(socket_id).emit("comment-on-bug-success", {
+          message: `${auth.username} commented on the bug ${mentionId}`,
+        });
+      }      
+    }
+    async function asyncSave(member, auth, Notification, bug_id, Notification, socket_id, mentionId) {
+      const notification = await Notification.findOne({ user_id: member.user_id });
+      const { notifications, count } = notification;
+      notification.count = count + 1;
+      notifications.push({
+        _id: mongoose.Types.ObjectId(),
+        socket_id,
+        payload,
+        message: `${auth.username} commented on the bug ${mentionId}`,
+        seen: false,
+      });      
+      await notification.save();
+    }
+
+    const obj = {
+      asyncEmit,
+      asyncSave,
+      member,
+      auth,
+      bug_id,
+      socket,
+      userid_to_socket,
+      Notification,
+      mentionId
+    };
+
+    queue.push(obj, (err, member) => {
+      if (err) {
+        console.log(err);
+      } else {
+
+      }
+    });
+  });
+}
 
 async function add_to_project(payload, socket) {
   const { username, title, auth } = payload;
@@ -15,7 +80,8 @@ async function add_to_project(payload, socket) {
       message: `${auth} added you to the project ${title}`,
     });
   }
-  const { notifications } = notification;
+  const { notifications, count } = notification;
+  notification.count = count + 1;
   notifications.push({
     _id: mongoose.Types.ObjectId(),
     socket_id: socket.id,
@@ -29,7 +95,7 @@ async function add_to_project(payload, socket) {
 async function onCloseTab(payload, socket) {
   const user = await client.get(socket.id);
   const obj = JSON.parse(user);
-  if(obj === null) return;
+  if (obj === null) return;
   const { user_id } = obj;
   await userid_to_socket.del(user_id);
   await client.del(socket.id);
@@ -71,7 +137,8 @@ async function add_to_bug(payload, socket) {
       message: `${auth} assigned you the bug ${title}`,
     });
   }
-  const { notifications } = notification;
+  const { notifications, count } = notification;
+  notification.count = count + 1;
   notifications.push({
     _id: mongoose.Types.ObjectId(),
     socket_id,
@@ -80,45 +147,6 @@ async function add_to_bug(payload, socket) {
     seen: false,
   });
   await notification.save();
-}
-
-async function comment_on_bug(payload, socket) {
-  const { members, auth, bug_id } = payload;
-  // for (let i = 0; i < members.length; i++) {
-  //   const socket_id = await userid_to_socket.get(members[i].user_id);
-  //   socket.broadcast.to(socket_id).emit("comment-on-bug-success", {
-  //     message: `${auth} commented on the bug ${bug_id}`,
-  //   });
-  //   const notification = await Notification.findOne({ user_id: auth });
-  //   const { notifications } = notification;
-  //   notifications.push({
-  //     _id: mongoose.Types.ObjectId(),
-  //     socket_id,
-  //     payload,
-  //     message: `${auth} commented on the bug ${bug_id}`,
-  //     seen: false,
-  //   });
-  //   const x = await notification.save();
-  //   console.log(x)
-  // }
-  console.log(members)
-  members.forEach(async member => {
-    const socket_id = await userid_to_socket.get(member.user_id);
-    socket.broadcast.to(socket_id).emit("comment-on-bug-success", {
-      message: `${auth} commented on the bug ${bug_id}`,
-    });
-    const notification = await Notification.findOne({ user_id: auth });
-      const { notifications } = notification;
-      notifications.push({
-        _id: mongoose.Types.ObjectId(),
-        socket_id,
-        payload,
-        message: `${auth} commented on the bug ${bug_id}`,
-        seen: false,
-      });
-      const x = await notification.save();
-      console.log(x)
-  });
 }
 
 async function check_socket_in_redis(payload, socket) {

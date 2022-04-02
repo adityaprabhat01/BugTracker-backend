@@ -12,11 +12,11 @@ const postComment = async (req, res) => {
   ]
   try {
     const bug = await Bug.findOne({ _id: bug_id });
-    if (bug.user.user_id.toString() !== user.user_id) {
-      return res.json({
-        message: "User not authorized to close the bug",
-      });
-    }
+    // if (bug.user.user_id.toString() !== user.user_id) {
+    //   return res.json({
+    //     message: "User not authorized to close the bug",
+    //   });
+    // }
     const newComment = new Comment({
       user,
       body,
@@ -96,7 +96,6 @@ const reactToComment = async (req, res) => {
   const { index, comment_id } = req.body;
   try {
     const comment = await Comment.findOne({ _id: comment_id });
-    console.log()
     comment.reactions[index].count = comment.reactions[index].count + 1;
     await comment.save();
     res.json({
@@ -105,7 +104,6 @@ const reactToComment = async (req, res) => {
       index
     })
   } catch (err) {
-    console.log(err)
     res.json({
       error: "Something went wrong"
     })

@@ -19,6 +19,7 @@ const {
 const {
   getNotifications,
   markAsRead,
+  getNotificationCount,
 } = require("./controllers/notificationController");
 
 const {
@@ -78,5 +79,6 @@ router.post("/reactToComment", reactToComment);
 // Notification controller
 router.get("/getNotification/:user_id", getNotifications);
 router.post("/markAsRead", markAsRead);
+router.get("/getNotificationCount/:user_id", getNotificationCount);
 
 module.exports = router;
